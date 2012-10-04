@@ -12,6 +12,3 @@
 	if (!isset($_SESSION['contacts'])) {
 		$_SESSION['contacts'] = $contacts;
 	}
-
-	
-?>
