@@ -2,14 +2,14 @@
 	
 	require_once 'data.php';
 
-	$id = $_REQUEST['id'];
+	$id = @$_REQUEST['id'];
 
 	function get($id) {
-		global $contacts;
-		$c = json_decode($contacts);
-
-		foreach ($c->contacts as $key => $value) {
-			if ($value->id == $id) return $value;
+		$contacts = $_SESSION['contacts']['contacts'];
+		
+		foreach ($contacts as $key => $value) {
+			
+			if ($value['id'] == $id) return $value;
 		}
 
 		return 0;

@@ -20,8 +20,8 @@
 	}
 
 	var Contact = Backbone.Model.extend({
-		url: 'contact.php',
-		urlRoot: 'cotact.php'
+		//url: 'contact.php',
+		urlRoot: 'contact.php'
 	})
 
 	var Contacts = Backbone.Collection.extend({
@@ -101,11 +101,13 @@
 			e.preventDefault()
 
 			var details = new ContactDetailsView({
-				collection: App.contacts, contact_id: el.data('id'),
-				model: new Contact()
+				collection: App.contacts, 
+				contact_id: el.data('id'),
+				model: App.contact
 			})
-
+			//console.log('hello')
 			details.render()
+			//App.detailsView.render()
 
 			//this.options.contactDetailsView.render()
 		}
@@ -124,13 +126,14 @@
 		onDestroy: function() {
 			App.contactsView.render()
 			$(this.el).empty()
+			$(this.el).unbind()
 		},
 
 		render: function(id) {
 			var tpl = Tpl.getTemplate('contanct-details')
-			
-			var contactModel = new Contact()
-					, contact = this.model.fetch({ 
+					, that = this
+			//console.log('hello1')
+			var contact = this.model.fetch({ 
 							data: { id: this.options.contact_id},
 							success: function(resp) {
 								
@@ -158,7 +161,13 @@
 			//	data: { id: id },
 			//});
 			//console.log(id)
-			console.log(this.model.destroy())
+			this.model.id = id
+			
+			this.model.destroy({
+				success: function(response) {
+					console.log('deletes')
+				}
+			})
 		}
 	})
 
@@ -167,15 +176,18 @@
 		Tpl.registerPartial()
 
 		var contacts = new Contacts()
+		var contact = new Contact
 
 		var editView = new EditContactView({el: $('.content'), 'collection': contacts})
-				//details = new ContactDetailsView({el:$('.content'), 'collection': contacts})
+				//, details = new ContactDetailsView({el:$('.content'), 'collection': contacts})
 
 		var contactsView = new ContactsView({el: $('.contacts'), 'collection': contacts, 'editContactView':editView}).render()
 
 		App.contactsView = contactsView
 		App.editView = editView
+		//App.detailsView = details
 		App.contacts = contacts
+		App.contact = contact
 		
 	})
 
