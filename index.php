@@ -20,7 +20,7 @@
 					<div class="contacts-list"></div>
 				</div>
 				<div class="span8">
-					<div class="content well">
+					<div class="content well">   
 
 					</div>
 				</div>
