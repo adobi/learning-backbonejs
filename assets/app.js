@@ -67,6 +67,7 @@
 	var ContactsView = Backbone.View.extend({
 		initialize: function() {
 			this.collection.on('add', this.appendContact, this)
+			this.collection.on('remve', this.removeContact, this)
 		},
 		events: {
 			"click .open-create-form": "openCreateForm",
@@ -94,6 +95,9 @@
 			var tpl = Tpl.getTemplate('contact-item')
 
 			this.$('ul').append(tpl(contact.attributes))
+		},
+		removeContact: function() {
+			
 		},
 		openContactDetails: function(e) {
 			var el = $(e.target)
@@ -163,16 +167,14 @@
 			//console.log(id)
 			this.model.id = id
 			
-			this.model.destroy({
-				success: function(response) {
-					console.log('deletes')
-				}
-			})
+			this.model.destroy()
+			//this.remove()
 		}
 	})
 
 	$(function() {
 		Backbone.emulateHTTP = true 
+
 		Tpl.registerPartial()
 
 		var contacts = new Contacts()
