@@ -15,7 +15,10 @@
 				<div class="span4 contacts">
 					<legend>
 						Contacts
-						<a href="#" class="btn btn-primary pull-right open-create-form"><strong style="font-size:1.3em">+</strong></a>
+						<div class="btn-group pull-right">
+							<a href="#" class="btn reset-contacts"><strong style="font-size:1.3em">-</strong></a>
+							<a href="#" class="btn btn-primary open-create-form"><strong style="font-size:1.3em">+</strong></a>
+						</div>
 					</legend>
 					<div class="contacts-list"></div>
 				</div>

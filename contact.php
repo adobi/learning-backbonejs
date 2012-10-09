@@ -20,10 +20,23 @@
 			echo json_encode(get($id));
 			break;
 		case 'POST':
+			//$_SESSION['contacts'][] =
+			$contact = json_decode($_POST['model'], true);
+			$contact['id'] = rand(1, 100000);
+			
+			$_SESSION['contacts'][] = $contact;
+
+			echo json_encode($contact);
+			//print_r(file_get_contents('php://input'));
+			break;
 		case 'PUT':
+			break;
 		case 'DELETE':
+			unset($_SESSION['contacts'][0]);
+			$_SESSION['contacts'] = array_values($_SESSION['contacts']);
+			break;
 	}
-	
+	//print_r($_SESSION);
 	die;
 
 ?>

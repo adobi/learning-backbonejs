@@ -1,5 +1,5 @@
 ;(function(window, $) {
-	App = {}
+	var App = {}
 	
 	var Tpl = {}
 	Tpl = {
@@ -30,6 +30,8 @@
 	})
 
 	var EditContactView = Backbone.View.extend({
+		//el: $('.content'), 
+		//collection: new Contacts(),
 		initialize: function() {
 			this.collection.on('add', this.clearInput, this)
 		},
@@ -48,12 +50,8 @@
 			//var form = $(e.target)
 
 			e.preventDefault()
-			
-			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait:true})
-
-			//console.log(ret.toJSON());
-
-			//console.log(this.collection.toJSON())
+			//console.log(this.collection)
+			this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()})
 		},
 		clearInput: function() {
 			this.$('#name').val('')
@@ -73,40 +71,20 @@
 		},
 		events: {
 			"click .open-create-form": "openCreateForm",
-			"click .open-contat-details": "openContactDetails",
-			'click .reset-contacts': "resetContacts"
+			"click .open-contat-details": "openContactDetails"
 		},
 		render: function() {
-			//var tpl = Tpl.getTemplate('contacts')
-
-			var that = this
-			that.collection.fetch({
-				success: function(resp) {
-					//console.log(resp.toJSON())
-					that.display(resp)
-				}
-			})
-			return this
-		},
-
-		resetContacts: function(e) 
-		{
-			var that = this
-
-			e.preventDefault()
-
-			$.get('reset.php', function() {
-				that.render()
-			})
-		},
-
-		display: function(resp) 
-		{
 			var tpl = Tpl.getTemplate('contacts')
 
-			this.$('.contacts-list').html(tpl({contacts: resp.toJSON()}))
-		},
+			var that = this
+			this.collection.fetch({
+				success: function(resp) {
+					that.$('.contacts-list').html(tpl(resp.toJSON()[0]))
+				}
+			})
 
+			return this
+		},
 		openCreateForm: function(e) {
 			e.preventDefault()
 
@@ -114,7 +92,6 @@
 			App.editView.render()
 		},
 		appendContact: function(contact) {
-			//console.log('append contact')
 			var tpl = Tpl.getTemplate('contact-item')
 
 			this.$('ul').append(tpl(contact.attributes))
@@ -147,35 +124,29 @@
 			"click .delete-contact": "deleteContact"
 		},
 		initialize: function() {
-			this.collection.on('remove', this.onDestroy, this)
+			this.model.on('destroy', this.onDestroy, this)
 		},
 
-		onDestroy: function(model, options) {
-			//App.contactsView.render()
-			//$(this.el).empty()
-			//$(this.el).unbind()
-
-			//console.log('delete from collection: ', model, options.index)
-			model.destroy()
-			//App.contactsView.collection = this.collection
+		onDestroy: function() {
 			App.contactsView.render()
+			$(this.el).empty()
+			$(this.el).unbind()
 		},
 
 		render: function(id) {
 			var tpl = Tpl.getTemplate('contanct-details')
 					, that = this
 			//console.log('hello1')
-			/*var contact = this.model.fetch({ 
+			var contact = this.model.fetch({ 
 							data: { id: this.options.contact_id},
 							success: function(resp) {
 								
 								$('.content').html(tpl(resp.toJSON()))
 							}
 						})
-			*/
 			//console.log(contact)
 			//$(this.el).html(tpl())
-			$(this.el).html(tpl(this.collection.get(this.options.contact_id).toJSON()))
+
 			return this;
 		},
 
@@ -194,18 +165,15 @@
 			//	data: { id: id },
 			//});
 			//console.log(id)
-			//this.model.id = id
+			this.model.id = id
 			
-			//this.model.destroy()
+			this.model.destroy()
 			//this.remove()
-
-			this.collection.remove(id)
 		}
 	})
 
 	$(function() {
 		Backbone.emulateHTTP = true 
-		Backbone.emulateJSON = true
 
 		Tpl.registerPartial()
 
