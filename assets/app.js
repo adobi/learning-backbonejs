@@ -4,7 +4,7 @@
 	var Tpl = {}
 	Tpl = {
 		getHtml: function(id) {
-
+			
 			return $('#'+id+'-template').html()
 		},
 
@@ -16,6 +16,7 @@
 
 		registerPartial: function() {
 			Handlebars.registerPartial('contact_item', this.getHtml('contact-item'))
+			Handlebars.registerPartial('contacts_list', this.getHtml('contacts-list'))
 		}
 	}
 
@@ -31,69 +32,36 @@
 		'url': 'contacts.php'
 	})
 
-	var EditContactView = Backbone.View.extend({
+	var SidebarView = Backbone.View.extend({
+		el: $('.sidebar'),
+
+		template: Tpl.get('contacts'),
+
 		initialize: function() {
-			this.collection.on('add', this.clearInput, this)
+			_.bindAll(this, 'render')
+			$(this.el).off()
 		},
-		events: {
-			'submit .save-contact-form': 'saveConact',
-			'click .close': 'close'
-		},
-		render: function() {
-			var tpl = Tpl.get('create-contact-form')
-			
-			$(this.el).html(tpl())
 
-			return this
-		},
-		saveConact: function(e) {
-			//var form = $(e.target)
-
-			e.preventDefault()
-			console.log('save contact')
-			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait:true})
-
-			//console.log(ret.toJSON());
-
-			//console.log(this.collection.toJSON())
-		},
-		clearInput: function() {
-			this.$('#name').val('')
-			this.$('#email').val('')
-		},
-		close: function(e) {
-			e.preventDefault()
-
-			$(this.el).empty()
-		}
-	})
-
-	var ContactsView = Backbone.View.extend({
-		
-		initialize: function() {
-
-			this.collection.on('add', this.appendContact, this)
-			this.collection.on('remve', this.removeContact, this)
-		},
 		events: {
 			"click .open-create-form": "openCreateForm",
-			"click .open-contat-details": "openContactDetails",
+			//"click .open-contat-details": "openContactDetails",
 			'click .reset-contacts': "resetContacts"
 		},
-		render: function() {
-			//var tpl = Tpl.get('contacts')
 
-			var that = this
+		render: function() {
 
 			$('.content').empty()
 
-			that.collection.fetch({
-				success: function(resp) {
-					//console.log(resp.toJSON())
-					that.display(resp)
-				}
+			$(this.el).html(
+				this.template()
+			)
+
+			this.contacts = new ContactsView({
+				el: this.$('.contacts-list'),
+				collection: App.contacts
 			})
-			return this
+			//console.log(this.contacts.render().el)
+			$(this.el).append(this.contacts.render().el)
 		},
 
 		resetContacts: function(e) 
@@ -107,50 +75,101 @@
 			})
 		},
 
-		display: function(resp) 
-		{
-			var tpl = Tpl.get('contacts')
+		openCreateForm: function(e) {
+			App.navigate(e)
+		}
 
-			//this.$('.contacts').html(tpl({contacts: resp.toJSON()}))
-			$(this.el).html(tpl({contacts: resp.toJSON()}))
+	})
+
+	var ContactsView = Backbone.View.extend({
+		template: Tpl.get('contacts-list'),
+		
+		initialize: function() {
+			_.bindAll(this, 'render')
+			this.collection.on('change', this.render)
 		},
 
-		openCreateForm: function(e) {
+		render: function() {
+			var that = this
+			this.collection.fetch().done(function(collection, response) {
+
+				$(that.el).html(
+					that.template({
+						contacts: collection
+					})
+				)
+			})
+			return this
+		},
+
+	})
+
+	var EditContactView = Backbone.View.extend({
+		template: Tpl.get('create-contact-form'),
+
+		initialize: function() {
+			$(this.el).off()
+			this.collection.on('add', this.clearInput, this)
+		},
+
+		events: {
+			'submit .save-contact-form': 'saveConact',
+			'click .close': 'close'
+		},
+
+		render: function() {
+			
+			$(this.el).html(this.template())
+
+			return this
+		},
+
+		saveConact: function(e) {
+
 			e.preventDefault()
 
-			//this.options.editContactView.render()
-			//App.editView.render()
-			new EditContactView({el: $('.content'), 'collection': contacts}).render() 
+			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait:true})
 		},
-		appendContact: function(contact) {
-			//console.log('append contact')
-			var tpl = Tpl.get('contact-item')
 
-			this.$('ul').append(tpl(contact.attributes))
+		clearInput: function() {
+			this.$('#name').val('')
+			this.$('#email').val('')
 		},
-		removeContact: function() {
-			
-		},
-		openContactDetails: function(e) {
-			var el = $(e.target)
-			
+
+		close: function(e) {
 			//e.preventDefault()
 
+			//$(this.el).empty()
 
-			$('.content').off()
-			new ContactDetailsView({
-				collection: App.contacts, 
-				contact_id: el.data('id'),
-				model: App.contact
-			}).render()
+			App.navigate(e)
+		}
+	})
 
-			//App.detailsView.render()
 
-			//this.options.contactDetailsView.render()
+	var FriendsView = Backbone.View.extend({
+		el: $('.content'),
+		render: function() {
+			var tpl = Tpl.get('friends')
+			$(this.el).html(tpl())
+			$('.sidebar').empty()
+			return this;
+		}
+	})
+
+	var NavigationView = Backbone.View.extend({
+		el:'.navigation',
+		events: {
+			'click a[href^="!#"]': 'navigate'
+		},
+		navigate: function(e) {
+			console.log('hello')
+			e.preventDefault()
+			App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
 		}
 	})
 
 	var ContactDetailsView = Backbone.View.extend({
+		template: Tpl.get('contanct-details'),
 		el: $('.content'),
 		events: {
 			"click .edit-contact": "editContact",
@@ -161,31 +180,27 @@
 		},
 
 		onDestroy: function(model, options) {
-			//App.contactsView.render()
 			var that = this
-			//console.log('delete from collection: ', model, options.index)
 			model.destroy({success: function(model, response) {
 
 				$(that.el).empty()
-				//$(that.el).off()
-				//$(App.contactsView.el).off()
-				App.contactsView.render()
+
+				//App.contactsView.render()
+				that.collection.remove(model)
 			}})
-			//App.contactsView.collection = this.collection
 		},
 
 		render: function() {
-			var tpl = Tpl.get('contanct-details')
-					, that = this
-					, json
-					, item = this.collection.get(this.options.contact_id)
+			var that = this
+				, json
+				, item = this.collection.get(this.options.contact_id)
 			
 			if (item) {
-				$(this.el).html(tpl(item.toJSON()))
+				$(this.el).html(this.template(item.toJSON()))
 			} else {
 
 				this.model.set('id', this.options.contact_id).fetch().done(function(response) {
-					$(that.el).html(tpl(response))
+					$(that.el).html(that.template(response))
 				})
 			}
 
@@ -208,59 +223,51 @@
 		}
 	})
 	
-	var FriendsView = Backbone.View.extend({
-		el: $('.content'),
-		render: function() {
-			var tpl = Tpl.get('friends')
-			$(this.el).html(tpl())
-			$('.sidebar').empty()
-			return this;
-		}
-	})
-
-	var NavigationView = Backbone.View.extend({
-		el:'.navigation',
-		events: {
-			'click a': 'navigate'
-		},
-		navigate: function(e) {
-			e.preventDefault()
-			App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
-		}
-	})
+	App.navigate = function(e) {
+		console.log('hello navigate')
+		//e.preventDefault()
+		App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
+	}
 
 	App.DisplayContacts = function() {
 
 		var contacts = new Contacts
 		var contact = new Contact
 
-		var editView = new EditContactView({el: $('.content'), 'collection': contacts})
-				//, details = new ContactDetailsView({el:$('.content'), 'collection': contacts})
-
-		var contactsView = new ContactsView({el: $('.contacts'), 'collection': contacts, 'editContactView':editView}).render()
-
-		App.contactsView = contactsView
-		App.editView = editView
-		//App.detailsView = details
 		App.contacts = contacts
 		App.contact = contact
 		
+		new SidebarView().render()
+
+		App.isSidebarRendered = true
 	}
 
 	var AppRouter = Backbone.Router.extend({
 		routes: {
 			'': 'home',
-			'!/contacts/*id': 'contacts',
+			'!/contacts/': 'contacts',
+			'!/contacts/:id': 'contacts',
+			'!/contacts/edit': 'editContact',
+			'!/contacts/edit/*id': 'editContact',
 			'!/friends': 'friends'
 		},
 		contacts: function(id) {
 			
 			App.DisplayContacts()
 
-			if (id.length) {
-
-				new ContactDetailsView({contact_id: id, collection: App.contacts, model:App.contact}).render()
+			if (id) {
+				if (!App.contactDetailsView) {
+					App.contactDetailsView = new ContactDetailsView({collection: App.contacts, model:App.contact})
+				}
+				App.contactDetailsView.options.contact_id = id
+				App.contactDetailsView.render()
 			}
+		},
+		editContact: function(id) {
+			
+			!App.isSidebarRendered && App.DisplayContacts()
+
+			new EditContactView({el: $('.content'), collection: App.contacts || new Contacts}).render() 
 		},
 		friends: function() {
 			
@@ -282,9 +289,9 @@
 		App.router = router
 
 		//new NavigationView
-		
-		//Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'})
+
 		Backbone.history.start()
+
 	})
 
 }) (window, jQuery);

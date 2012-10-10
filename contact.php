@@ -27,6 +27,19 @@
 		//print_r($_SESSION['contacts']);
 		$_SESSION['contacts'] = array_values($_SESSION['contacts']);
 	}
+	function set($id, $data) {
+		$contacts = $_SESSION['contacts'];
+		
+		foreach ($contacts as $key => $value) {
+			
+			if ($value['id'] == $id) {
+				$_SESSION['contacts'][$key] = $data;
+
+			}
+		}
+
+		return 0;
+	}
 	switch ($_SERVER['REQUEST_METHOD']) {
 		case 'GET':
 			echo json_encode(get($id));
@@ -42,6 +55,12 @@
 			//print_r(file_get_contents('php://input'));
 			break;
 		case 'PUT':
+			parse_str(file_get_contents("php://input"),$data);
+			//print_r($data);
+			$contact = json_decode($data['model'], true);
+
+			set($_GET['id'], $contact);
+
 			break;
 		case 'DELETE':
 			//unset($_SESSION['contacts'][0]);

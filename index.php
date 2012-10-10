@@ -44,7 +44,7 @@
 
 		<script id="create-contact-form-template" type="text/x-handlebars-template">
 			<form class="form-horizontal save-contact-form" method="post" action="">
-				<a href="#" class="close pull-right">&times;</a>
+				<a href="#!/contacts/" class="close pull-right">&times;</a>
 			  <div class="control-group">
 			    <label class="control-label" for="name">Name</label>
 			    <div class="controls">
@@ -62,23 +62,28 @@
 			  </div>
 			</form>
 		</script>
+
+		<script id="contacts-template" type="text/x-handlebars-template">
+			<legend>
+				Contacts
+				<div class="btn-group pull-right">
+					<a href="javascript:void(0)" class="btn reset-contacts"><strong style="font-size:1.3em">-</strong></a>
+					<a href="#!/contacts/edit/" class="btn btn-primary open-create-form"><strong style="font-size:1.3em">+</strong></a>
+				</div>
+			</legend>
+			<div class="contacts-list"></div>
+		</script>	
+		
+		<script id="contacts-list-template" type="text/x-handlebars-template">
+			<ul class="nav nav-list bs-docs-sidenav">{{#contacts}} {{>contact_item}} {{/contacts}}</ul>
+		</script>	
+		
 		<script id="contact-item-template" type="text/x-handlebars-template">
 			<li>
 				<a href="#!/contacts/{{id}}" class="open-contat-details" data-id="{{id}}">{{name}}</a>
 			</li>	
 		</script>
-		<script id="contacts-template" type="text/x-handlebars-template">
-			<legend>
-				Contacts
-				<div class="btn-group pull-right">
-					<a href="#" class="btn reset-contacts"><strong style="font-size:1.3em">-</strong></a>
-					<a href="#" class="btn btn-primary open-create-form"><strong style="font-size:1.3em">+</strong></a>
-				</div>
-			</legend>
-			<div class="contacts-list">
-				<ul class="nav nav-list bs-docs-sidenav">{{#contacts}} {{>contact_item}} {{/contacts}}</ul>
-			</div>
-		</script>	
+
 		<script id="contanct-details-template" type="text/x-handlebars-template">
 			<div class="contact">
 				<legend> 
@@ -94,6 +99,7 @@
 				</dl>
 			</div>		
 		</script>	
+		
 		<script id="friends-template" type="text/x-handlebars-template">
 			<div class="friends">
 				<legend> 
