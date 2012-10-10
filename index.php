@@ -14,17 +14,19 @@
 				<h1 style="text-align:center">Hello Backbone JS</h1>
 				<hr>
 				<div class="navigation" style="text-align:center">
+					<!--
 					HTML5 PushState
 					<span class="btn-group">
 						<a href="/" class="btn">Home</a>
-						<a href="/contacts" class="btn">Contacts</a>
-						<a href="/friends" class="btn">Friends</a>
+						<a href="contacts" class="btn">Contacts</a>
+						<a href="friends" class="btn">Friends</a>
 					</span>
 					&nbsp;
 					Hashbang URLs
+					-->
 					<span class="btn-group">
-						<a href="/" class="btn">Home</a>
-						<a href="#!/contacts" class="btn">Contacts</a>
+						<a href="#" class="btn">Home</a>
+						<a href="#!/contacts/" class="btn">Contacts</a>
 						<a href="#!/friends" class="btn">Friends</a>
 					</span>
 				</div>
@@ -62,7 +64,7 @@
 		</script>
 		<script id="contact-item-template" type="text/x-handlebars-template">
 			<li>
-				<a href="#" class="open-contat-details" data-id="{{id}}">{{name}}</a>
+				<a href="#!/contacts/{{id}}" class="open-contat-details" data-id="{{id}}">{{name}}</a>
 			</li>	
 		</script>
 		<script id="contacts-template" type="text/x-handlebars-template">

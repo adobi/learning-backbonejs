@@ -131,7 +131,7 @@
 		openContactDetails: function(e) {
 			var el = $(e.target)
 			
-			e.preventDefault()
+			//e.preventDefault()
 
 			var details = new ContactDetailsView({
 				collection: App.contacts, 
@@ -169,17 +169,28 @@
 			//App.contactsView.collection = this.collection
 		},
 
-		render: function(id) {
+		render: function() {
 			var tpl = Tpl.get('contanct-details')
 					, that = this
-			$(this.el).html(tpl(this.collection.get(this.options.contact_id).toJSON()))
+					, json
+					, item = this.collection.get(this.options.contact_id)
+			
+			if (item) {
+				$(this.el).html(tpl(item.toJSON()))
+			} else {
+
+				this.model.set('id', this.options.contact_id).fetch().done(function(response) {
+					$(that.el).html(tpl(response))
+				})
+			}
+
 
 			return this;
 		},
 
 		editContact: function(e) {
 			e.preventDefault()
-			console.log('edit')
+			//console.log('edit')
 		},
 
 		deleteContact: function(e) {
@@ -213,9 +224,9 @@
 		}
 	})
 
-	App.Contacts = function() {
+	App.DisplayContacts = function() {
 
-		var contacts = new Contacts()
+		var contacts = new Contacts
 		var contact = new Contact
 
 		var editView = new EditContactView({el: $('.content'), 'collection': contacts})
@@ -234,12 +245,17 @@
 	var AppRouter = Backbone.Router.extend({
 		routes: {
 			'': 'home',
-			'contacts': 'contacts',
-			'friends': 'friends'
+			'!/contacts/*id': 'contacts',
+			'!/friends': 'friends'
 		},
-		contacts: function() {
-			//console.log('hello contacts')
-			App.Contacts()
+		contacts: function(id) {
+			
+			App.DisplayContacts()
+
+			if (id.length) {
+
+				new ContactDetailsView({contact_id: id, collection: App.contacts, model:App.contact}).render()
+			}
 		},
 		friends: function() {
 			
@@ -260,11 +276,10 @@
 
 		App.router = router
 
-		new NavigationView
-		//console.log(router)
-
-		Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'})
-		//Backbone.history.start()
+		//new NavigationView
+		
+		//Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'})
+		Backbone.history.start()
 	})
 
 }) (window, jQuery);
