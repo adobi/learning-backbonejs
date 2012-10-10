@@ -50,7 +50,7 @@
 			//var form = $(e.target)
 
 			e.preventDefault()
-			
+			console.log('save contact')
 			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait:true})
 
 			//console.log(ret.toJSON());
@@ -69,7 +69,9 @@
 	})
 
 	var ContactsView = Backbone.View.extend({
+		
 		initialize: function() {
+
 			this.collection.on('add', this.appendContact, this)
 			this.collection.on('remve', this.removeContact, this)
 		},
@@ -117,7 +119,8 @@
 			e.preventDefault()
 
 			//this.options.editContactView.render()
-			App.editView.render()
+			//App.editView.render()
+			new EditContactView({el: $('.content'), 'collection': contacts}).render() 
 		},
 		appendContact: function(contact) {
 			//console.log('append contact')
@@ -133,13 +136,14 @@
 			
 			//e.preventDefault()
 
-			var details = new ContactDetailsView({
+
+			$('.content').off()
+			new ContactDetailsView({
 				collection: App.contacts, 
 				contact_id: el.data('id'),
 				model: App.contact
-			})
-			//console.log('hello')
-			details.render()
+			}).render()
+
 			//App.detailsView.render()
 
 			//this.options.contactDetailsView.render()
@@ -163,7 +167,8 @@
 			model.destroy({success: function(model, response) {
 
 				$(that.el).empty()
-				$(that.el).unbind()
+				//$(that.el).off()
+				//$(App.contactsView.el).off()
 				App.contactsView.render()
 			}})
 			//App.contactsView.collection = this.collection
