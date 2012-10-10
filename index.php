@@ -10,17 +10,19 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="hero-unit"><h1>Hello Backbone JS</h1></div>
+			<div class="hero-unit" style="padding-bottom:30px;">
+				<h1>Hello Backbone JS</h1>
+				<hr>
+				<div class="navigation" style="text-align:center">
+					<div class="btn-group">
+						<a href="/" class="btn">Home</a>
+						<a href="/contacts" class="btn">Contacts</a>
+						<a href="/friends" class="btn">Friends</a>
+					</div>
+				</div>
+			</div>
 			<div class="row">
 				<div class="span4 contacts">
-					<legend>
-						Contacts
-						<div class="btn-group pull-right">
-							<a href="#" class="btn reset-contacts"><strong style="font-size:1.3em">-</strong></a>
-							<a href="#" class="btn btn-primary open-create-form"><strong style="font-size:1.3em">+</strong></a>
-						</div>
-					</legend>
-					<div class="contacts-list"></div>
 				</div>
 				<div class="span8">
 					<div class="content well">   
@@ -56,7 +58,16 @@
 			</li>	
 		</script>
 		<script id="contacts-template" type="text/x-handlebars-template">
-			<ul class="nav nav-list bs-docs-sidenav">{{#contacts}} {{>contact_item}} {{/contacts}}</ul>
+			<legend>
+				Contacts
+				<div class="btn-group pull-right">
+					<a href="#" class="btn reset-contacts"><strong style="font-size:1.3em">-</strong></a>
+					<a href="#" class="btn btn-primary open-create-form"><strong style="font-size:1.3em">+</strong></a>
+				</div>
+			</legend>
+			<div class="contacts-list">
+					<ul class="nav nav-list bs-docs-sidenav">{{#contacts}} {{>contact_item}} {{/contacts}}</ul>
+			</div>
 		</script>	
 
 		<script id="contanct-details-template" type="text/x-handlebars-template">

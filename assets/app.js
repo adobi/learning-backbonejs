@@ -106,7 +106,8 @@
 		{
 			var tpl = Tpl.getTemplate('contacts')
 
-			this.$('.contacts-list').html(tpl({contacts: resp.toJSON()}))
+			//this.$('.contacts').html(tpl({contacts: resp.toJSON()}))
+			$(this.el).html(tpl({contacts: resp.toJSON()}))
 		},
 
 		openCreateForm: function(e) {
@@ -206,12 +207,19 @@
 			this.collection.remove(id)
 		}
 	})
+	
+	var NavigationView = Backbone.View.extend({
+		el:'.navigation',
+		events: {
+			'click a': 'navigate'
+		},
+		navigate: function(e) {
+			e.preventDefault()
+			App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
+		}
+	})
 
-	$(function() {
-		//Backbone.emulateHTTP = true 
-		Backbone.emulateJSON = true
-
-		Tpl.registerPartial()
+	App.Contacts = function() {
 
 		var contacts = new Contacts()
 		var contact = new Contact
@@ -227,6 +235,37 @@
 		App.contacts = contacts
 		App.contact = contact
 		
+	}
+
+	var AppRouter = Backbone.Router.extend({
+		routes: {
+			'': 'home',
+			'contacts': 'contacts',
+			'friends': 'friends'
+		},
+		contacts: function() {
+			console.log('hello contacts')
+			App.Contacts()
+		},
+		friends: function() {
+			console.log('hello friends')
+		}
+	})
+
+	$(function() {
+		//Backbone.emulateHTTP = true 
+		Backbone.emulateJSON = true
+
+		Tpl.registerPartial()
+
+		var router = new AppRouter()
+
+		App.router = router
+
+		new NavigationView
+		//console.log(router)
+
+		Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'});
 	})
 
 }) (window, jQuery);
