@@ -5,7 +5,7 @@
 	$id = @$_REQUEST['id'];
 
 	function get($id) {
-		$contacts = $_SESSION['contacts']['contacts'];
+		$contacts = $_SESSION['contacts'];
 		
 		foreach ($contacts as $key => $value) {
 			
@@ -14,7 +14,19 @@
 
 		return 0;
 	}
+	function remove($id) {
+		$contacts = $_SESSION['contacts'];
+		
+		foreach ($contacts as $key => $value) {
+			
+			//print_r($id);
+			//print_r($value['id'])
 
+			if ($value['id'] == $id) unset($_SESSION['contacts'][$key]);
+		}
+		//print_r($_SESSION['contacts']);
+		$_SESSION['contacts'] = array_values($_SESSION['contacts']);
+	}
 	switch ($_SERVER['REQUEST_METHOD']) {
 		case 'GET':
 			echo json_encode(get($id));
@@ -32,8 +44,9 @@
 		case 'PUT':
 			break;
 		case 'DELETE':
-			unset($_SESSION['contacts'][0]);
-			$_SESSION['contacts'] = array_values($_SESSION['contacts']);
+			//unset($_SESSION['contacts'][0]);
+			//$_SESSION['contacts'] = array_values($_SESSION['contacts']);
+			remove($_GET['id']);
 			break;
 	}
 	//print_r($_SESSION);

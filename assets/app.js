@@ -21,7 +21,9 @@
 
 	var Contact = Backbone.Model.extend({
 		//url: 'contact.php',
-		urlRoot: 'contact.php'
+		url: function() {
+			return 'contact.php?id=' + this.get('id')
+		}
 	})
 
 	var Contacts = Backbone.Collection.extend({
@@ -152,13 +154,15 @@
 
 		onDestroy: function(model, options) {
 			//App.contactsView.render()
-			//$(this.el).empty()
-			//$(this.el).unbind()
-
+			var that = this
 			//console.log('delete from collection: ', model, options.index)
-			model.destroy()
+			model.destroy({success: function(model, response) {
+
+				$(that.el).empty()
+				$(that.el).unbind()
+				App.contactsView.render()
+			}})
 			//App.contactsView.collection = this.collection
-			App.contactsView.render()
 		},
 
 		render: function(id) {
@@ -204,7 +208,7 @@
 	})
 
 	$(function() {
-		Backbone.emulateHTTP = true 
+		//Backbone.emulateHTTP = true 
 		Backbone.emulateJSON = true
 
 		Tpl.registerPartial()
