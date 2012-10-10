@@ -8,7 +8,7 @@
 			return $('#'+id+'-template').html()
 		},
 
-		getTemplate: function(id) {
+		get: function(id) {
 			
 			return Handlebars.compile(this.getHtml(id))
 
@@ -40,7 +40,7 @@
 			'click .close': 'close'
 		},
 		render: function() {
-			var tpl = Tpl.getTemplate('create-contact-form')
+			var tpl = Tpl.get('create-contact-form')
 			
 			$(this.el).html(tpl())
 
@@ -79,9 +79,12 @@
 			'click .reset-contacts': "resetContacts"
 		},
 		render: function() {
-			//var tpl = Tpl.getTemplate('contacts')
+			//var tpl = Tpl.get('contacts')
 
 			var that = this
+
+			$('.content').empty()
+
 			that.collection.fetch({
 				success: function(resp) {
 					//console.log(resp.toJSON())
@@ -104,7 +107,7 @@
 
 		display: function(resp) 
 		{
-			var tpl = Tpl.getTemplate('contacts')
+			var tpl = Tpl.get('contacts')
 
 			//this.$('.contacts').html(tpl({contacts: resp.toJSON()}))
 			$(this.el).html(tpl({contacts: resp.toJSON()}))
@@ -118,7 +121,7 @@
 		},
 		appendContact: function(contact) {
 			//console.log('append contact')
-			var tpl = Tpl.getTemplate('contact-item')
+			var tpl = Tpl.get('contact-item')
 
 			this.$('ul').append(tpl(contact.attributes))
 		},
@@ -167,20 +170,10 @@
 		},
 
 		render: function(id) {
-			var tpl = Tpl.getTemplate('contanct-details')
+			var tpl = Tpl.get('contanct-details')
 					, that = this
-			//console.log('hello1')
-			/*var contact = this.model.fetch({ 
-							data: { id: this.options.contact_id},
-							success: function(resp) {
-								
-								$('.content').html(tpl(resp.toJSON()))
-							}
-						})
-			*/
-			//console.log(contact)
-			//$(this.el).html(tpl())
 			$(this.el).html(tpl(this.collection.get(this.options.contact_id).toJSON()))
+
 			return this;
 		},
 
@@ -194,20 +187,21 @@
 
 			var el = $(e.target)
 					, id = el.data('id')
-					
-			//var ret = contactModel.destroy({
-			//	data: { id: id },
-			//});
-			//console.log(id)
-			//this.model.id = id
-			
-			//this.model.destroy()
-			//this.remove()
 
 			this.collection.remove(id)
 		}
 	})
 	
+	var FriendsView = Backbone.View.extend({
+		el: $('.content'),
+		render: function() {
+			var tpl = Tpl.get('friends')
+			$(this.el).html(tpl())
+			$('.sidebar').empty()
+			return this;
+		}
+	})
+
 	var NavigationView = Backbone.View.extend({
 		el:'.navigation',
 		events: {
@@ -244,11 +238,15 @@
 			'friends': 'friends'
 		},
 		contacts: function() {
-			console.log('hello contacts')
+			//console.log('hello contacts')
 			App.Contacts()
 		},
 		friends: function() {
-			console.log('hello friends')
+			
+			new FriendsView().render()
+		},
+		home: function() {
+			//console.log('hello home')
 		}
 	})
 
@@ -265,7 +263,8 @@
 		new NavigationView
 		//console.log(router)
 
-		Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'});
+		Backbone.history.start({pushState: true, root:'/backbonejs/learning-backbonejs/'})
+		//Backbone.history.start()
 	})
 
 }) (window, jQuery);
