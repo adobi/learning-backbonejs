@@ -39,12 +39,12 @@
 
 		initialize: function() {
 			_.bindAll(this, 'render')
-			$(this.el).off()
+			this.dispose()
 		},
 
 		events: {
-			"click .open-create-form": "openCreateForm",
-			//"click .open-contat-details": "openContactDetails",
+			"click .open-create-form": "proxy",
+			"click .open-contat-details": "proxy",
 			'click .reset-contacts': "resetContacts"
 		},
 
@@ -68,15 +68,19 @@
 		{
 			var that = this
 
-			e.preventDefault()
+			//e.preventDefault()
 
 			$.get('reset.php', function() {
 				that.render()
 			})
 		},
 
-		openCreateForm: function(e) {
-			App.navigate(e)
+		proxy: function(e) {
+			
+			//e.preventDefault()
+			//new EditContactView({el: $('.content'), collection: App.contacts || new Contacts}).render() 
+
+			//App.navigate(e)
 		}
 
 	})
@@ -98,6 +102,8 @@
 						contacts: collection
 					})
 				)
+
+				return that
 			})
 			return this
 		},
@@ -108,7 +114,8 @@
 		template: Tpl.get('create-contact-form'),
 
 		initialize: function() {
-			$(this.el).off()
+			//$(this.el).off()
+			this.dispose()
 			this.collection.on('add', this.clearInput, this)
 		},
 
@@ -128,7 +135,7 @@
 
 			e.preventDefault()
 
-			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait:true})
+			var ret = this.collection.create({name: this.$('#name').val(), email: this.$('#email').val()}, {wait_:true})
 		},
 
 		clearInput: function() {
@@ -141,7 +148,7 @@
 
 			//$(this.el).empty()
 
-			App.navigate(e)
+			//App.navigate(e)
 		}
 	})
 
@@ -162,8 +169,8 @@
 			'click a[href^="!#"]': 'navigate'
 		},
 		navigate: function(e) {
-			console.log('hello')
-			e.preventDefault()
+			//console.log('hello')
+			//e.preventDefault()
 			App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
 		}
 	})
@@ -224,9 +231,12 @@
 	})
 	
 	App.navigate = function(e) {
-		console.log('hello navigate')
+		//console.log('hello navigate')
 		//e.preventDefault()
-		App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
+
+		//App.router.navigate($(e.target).attr('href'), {trigger: true, replace: true})
+
+		//e.stopPropagation()
 	}
 
 	App.DisplayContacts = function() {
@@ -243,12 +253,15 @@
 	}
 
 	var AppRouter = Backbone.Router.extend({
+		initialize: function() {
+			_.bindAll(this)
+		},
 		routes: {
 			'': 'home',
 			'!/contacts/': 'contacts',
 			'!/contacts/:id': 'contacts',
-			'!/contacts/edit': 'editContact',
-			'!/contacts/edit/*id': 'editContact',
+			'!/contacts/edit*id': 'editContact',
+			'!/contacts/edit/:id': 'editContact',
 			'!/friends': 'friends'
 		},
 		contacts: function(id) {
@@ -262,16 +275,22 @@
 				App.contactDetailsView.options.contact_id = id
 				App.contactDetailsView.render()
 			}
+
+			return false;
 		},
 		editContact: function(id) {
 			
 			!App.isSidebarRendered && App.DisplayContacts()
 
 			new EditContactView({el: $('.content'), collection: App.contacts || new Contacts}).render() 
+
+			return false;
 		},
 		friends: function() {
 			
 			new FriendsView().render()
+
+			return false;
 		},
 		home: function() {
 			//console.log('hello home')
@@ -279,6 +298,13 @@
 	})
 
 	$(function() {
+
+		$('body').on('click' , 'a[href^="#"]', function(e) { 
+			//console.log('hello')
+			//e.preventDefault() 
+			//e.stopPropagation()
+		})
+
 		//Backbone.emulateHTTP = true 
 		Backbone.emulateJSON = true
 

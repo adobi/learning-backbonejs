@@ -8,22 +8,12 @@
 		<link rel="stylesheet" type="text/css" href="assets/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="assets/style.css">
 	</head>
-	<body>
+	<body style="min-height:600px;">
 		<div class="container">
 			<div class="hero-unit" style="padding-bottom:30px;">
 				<h1 style="text-align:center">Hello Backbone JS</h1>
 				<hr>
 				<div class="navigation" style="text-align:center">
-					<!--
-					HTML5 PushState
-					<span class="btn-group">
-						<a href="/" class="btn">Home</a>
-						<a href="contacts" class="btn">Contacts</a>
-						<a href="friends" class="btn">Friends</a>
-					</span>
-					&nbsp;
-					Hashbang URLs
-					-->
 					<span class="btn-group">
 						<a href="#" class="btn">Home</a>
 						<a href="#!/contacts/" class="btn">Contacts</a>
@@ -114,7 +104,7 @@
 		</script>
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="assets/underscore-min.js"></script>
-		<script src="assets/backbone-min.js"></script>
+		<script src="assets/backbone.js"></script>
 		<script src="assets/handlebars.js"></script>
 		<script src="assets/app.js"></script>
 	</body>
